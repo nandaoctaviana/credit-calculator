@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Mandiri - Personal Loan Group | Credit Calculator Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2canvas untuk Fitur Ekspor PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        mandiri: {
+                            blue: '#003366',
+                            gold: '#FFB81C',
+                            darkblue: '#002244',
+                            lightbg: '#F4F6F9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-mandiri-lightbg text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- ================= AUTH CONTAINER (LOGIN & SIGN UP) ================= -->
+    <div id="auth-container" class="flex flex-col min-h-screen justify-center items-center p-4 bg-gradient-to-br from-mandiri-darkblue via-mandiri-blue to-slate-900">
+        
+        <!-- CARD LOGIN -->
+        <div id="login-card" class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border-t-4 border-mandiri-gold transition-all duration-300">
+            <div class="bg-slate-100 text-slate-800 p-6 text-center border-b border-slate-300 relative space-y-2">
+                <div class="flex justify-center bg-white py-2 px-4 rounded shadow-sm inline-block">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Logo Bank Mandiri" class="h-9 object-contain">
+                </div>
+                <h2 class="text-xs font-bold text-mandiri-blue tracking-wide uppercase pt-1">Credit Calculator Portal</h2>
+                <p class="text-[11px] text-slate-600">Personal Loan Group</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div id="login-error" class="hidden bg-rose-50 text-rose-700 p-3 rounded-lg text-xs font-semibold border border-rose-200">
+                    Invalid Corporate ID or Password. Please try again.
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Corporate ID</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="login-nip" placeholder="Example: MND-12345" class="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Secure Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-key"></i></span>
+                        <input type="password" id="login-pass" placeholder="••••••••" class="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                    </div>
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-mandiri-blue hover:bg-mandiri-darkblue text-mandiri-gold font-bold py-3 rounded-xl shadow transition flex items-center justify-center space-x-2 mt-2">
+                    <span>Log-In</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <div class="text-center pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Don't have an account?</span>
+                    <button onclick="toggleAuthMode('signup')" class="text-mandiri-blue font-bold hover:underline">Register (Sign Up)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD SIGN UP -->
+        <div id="signup-card" class="hidden bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border-t-4 border-mandiri-gold transition-all duration-300">
+            <div class="bg-slate-100 text-slate-800 p-6 text-center border-b border-slate-300 space-y-2">
+                <div class="flex justify-center bg-white py-2 px-4 rounded shadow-sm inline-block">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Logo Bank Mandiri" class="h-9 object-contain">
+                </div>
+                <h2 class="text-xs font-bold text-mandiri-blue tracking-wide uppercase pt-1">Account Registration</h2>
+                <p class="text-[11px] text-slate-600">Create an account to access the Credit Calculator</p>
+            </div>
+            <div class="p-6 space-y-3">
+                <div id="signup-success" class="hidden bg-emerald-50 text-emerald-700 p-3 rounded-lg text-xs font-semibold border border-emerald-200">
+                    Account created successfully! Please log in with your new account.
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Example: Nanda Octaviana" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Corporate ID</label>
+                    <input type="text" id="signup-nip" placeholder="Example: MND-12345" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Corporate Email (@bankmandiri.co.id)</label>
+                    <input type="email" id="signup-email" placeholder="your.name@bankmandiri.co.id" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Create Password</label>
+                    <input type="password" id="signup-pass" placeholder="••••••••" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-mandiri-blue focus:outline-none">
+                </div>
+                <button onclick="handleSignup()" class="w-full bg-mandiri-gold hover:bg-amber-400 text-mandiri-blue font-black py-2.5 rounded-xl shadow transition flex items-center justify-center space-x-2 mt-2">
+                    <span>Register New Account</span>
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+                <div class="text-center pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-500">Already have an account?</span>
+                    <button onclick="toggleAuthMode('login')" class="text-mandiri-blue font-bold hover:underline">Back to Login</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-slate-400 text-xs mt-6">
+            &copy; 2026 PT Bank Mandiri (Persero) Tbk. Designed & Developed by Nanda Octaviana.
+        </div>
+    </div>
+
+
+    <!-- ================= MAIN APP CONTAINER (KALKULATOR UTAMA) ================= -->
+    <div id="app-container" class="hidden flex-col min-h-screen bg-mandiri-lightbg">
+
+        <!-- HEADER / NAVBAR -->
+        <header class="bg-mandiri-blue text-white shadow-md border-b-4 border-mandiri-gold">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white px-2.5 py-1.5 rounded shadow flex items-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Logo Mandiri" class="h-6 object-contain">
+                    </div>
+                    <span class="text-sm text-mandiri-gold font-semibold hidden sm:inline">| Personal Loan Group</span>
+                    </span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3 border-l border-blue-800 pl-4">
+                        <div class="w-8 h-8 rounded-full bg-mandiri-gold text-mandiri-blue flex items-center justify-center font-bold text-sm shadow" id="user-avatar-initial">
+                            Y
+                        </div>
+                        <div class="text-xs">
+                            <p class="font-bold text-white" id="user-display-name">Your Name</p>
+                            <p class="text-blue-200 text-[10px]">Active Session</p>
+                        </div>
+                        <button onclick="handleLogout()" title="Keluar Akun" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition ml-2 shadow flex items-center space-x-1">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span class="hidden sm:inline">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA: CREDIT CALCULATOR -->
+        <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8 space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-xl border-t-4 border-mandiri-gold p-6 md:p-8 space-y-6">
+                <div class="border-b pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xl font-bold text-mandiri-blue flex items-center space-x-2">
+                            <i class="fa-solid fa-calculator text-mandiri-gold text-2xl"></i>
+                            <span>Credit Calculator</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">Input customer details and financial parameters.</p>
+                    </div>
+                    <button onclick="exportToPNG()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow flex items-center space-x-1.5 transition shrink-0">
+                        <i class="fa-solid fa-download"></i> <span>Download PNG</span>
+                    </button>
+                </div>
+
+                <!-- Form Input Kalkulator -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+                    
+                    <!-- Informasi Nasabah -->
+                    <div class="md:col-span-2 pb-2 border-b border-slate-100">
+                        <p class="font-bold text-mandiri-blue uppercase tracking-wider text-[11px] mb-3"><i class="fa-solid fa-user-tag mr-1.5"></i> Customer Information</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Customer Name:</label>
+                                <input type="text" id="calc-customer-name" placeholder="Example: Budi Santoso" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Region:</label>
+                                <input type="text" id="calc-region" placeholder="Example: Region Jakarta" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Area:</label>
+                                <input type="text" id="calc-area" placeholder="Example: Area Jakarta Thamrin" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-1">Branch:</label>
+                                <input type="text" id="calc-branch" placeholder="Example: KC Jakarta MH Thamrin" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parameter Finansial -->
+                    <div class="md:col-span-2 pt-1">
+                        <p class="font-bold text-mandiri-blue uppercase tracking-wider text-[11px] mb-3"><i class="fa-solid fa-file-invoice-dollar mr-1.5"></i> Financial & Limit Parameter</p>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Select Class Payroll:</label>
+                        <select id="calc-class" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                            <option value="1">Class 1</option>
+                            <option value="2">Class 2</option>
+                            <option value="3">Class 3</option>
+                            <option value="4">Class 4</option>
+                            <option value="5">Class 5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Monthly Income Tier:</label>
+                        <input type="text" id="calc-income" placeholder="Example: 6.000.000" oninput="formatRupiahInput(this)" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Loan Limit (Requested Credit Limit):</label>
+                        <input type="text" id="calc-plafon" placeholder="Example: 250.000.000" oninput="formatRupiahInput(this)" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Tenor (Months):</label>
+                        <input type="number" id="calc-tenor" placeholder="Example: 60" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-700 mb-1">Effective Interest Rate (% per annum):</label>
+                        <input type="number" id="calc-rate" placeholder="Example: 11.5" step="0.1" value="11.5" class="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-mandiri-blue">
+                    </div>
+                    
+                    <!-- Container Dinamis Fasilitas Luar KSM Unlimited -->
+                    <div class="md:col-span-2 space-y-4 pt-3 border-t border-slate-100" id="outside-loans-wrapper">
+                        <div class="space-y-1.5 bg-slate-50 p-4 rounded-xl border border-slate-200 loan-item" data-index="1">
+                            <label class="block font-bold text-slate-700">Fasilitas di Luar KSM (Fasilitas 1):</label>
+                            <input type="text" id="calc-outside-loan-1" value="Rp 0" oninput="formatRupiahInput(this)" class="w-full p-3 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-mandiri-blue outside-loan-input">
+                            <div class="flex items-center space-x-2 pt-2">
+                                <input type="checkbox" id="check-loan-1" onchange="handleDynamicLoanCheckbox(1)" class="w-4 h-4 text-mandiri-blue rounded border-slate-300 focus:ring-mandiri-blue cursor-pointer loan-checkbox">
+                                <label for="check-loan-1" class="font-bold text-mandiri-blue cursor-pointer text-xs">Click Checkbox, jika ada fasilitas lain di luar KSM.</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 pt-3">
+                    <button onclick="runCreditCalculator()" class="flex-1 bg-mandiri-blue hover:bg-mandiri-darkblue text-mandiri-gold font-bold py-3.5 rounded-xl shadow-md transition text-sm flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-gears"></i>
+                        <span>Check</span>
+                    </button>
+                    <button onclick="clearCalculatorForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-3.5 rounded-xl shadow transition text-xs flex items-center space-x-1.5" title="Bersihkan Form">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Clear</span>
+                    </button>
+                </div>
+
+                <!-- Hasil Validasi Kalkulator -->
+                <div id="calc-result-box" class="hidden p-5 rounded-xl border text-xs space-y-3">
+                    <div id="calc-status-header" class="font-bold text-sm flex items-center space-x-2"></div>
+                    <div id="calc-detail-text" class="text-slate-700 space-y-1 font-mono"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs mt-auto border-t border-slate-700">
+            <p>&copy; 2026 PT Bank Mandiri (Persero) Tbk. Designed & Developed by Nanda Octaviana.</p>
+        </footer>
+
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyF7FFcTsYZ-Ln3JfPr6507tNCqgQwsdeARIyXbdZk3hW6sP_dFvs5veJ0TypVp1zvn/exec";
+
+        function toggleAuthMode(mode) {
+            const loginCard = document.getElementById('login-card');
+            const signupCard = document.getElementById('signup-card');
+            if (mode === 'signup') {
+                loginCard.classList.add('hidden');
+                signupCard.classList.remove('hidden');
+            } else {
+                signupCard.classList.add('hidden');
+                loginCard.classList.remove('hidden');
+            }
+        }
+
+        function handleSignup() {
+            const name = document.getElementById('signup-name').value;
+            const nip = document.getElementById('signup-nip').value;
+            if(!name || !nip) {
+                alert('Mohon isi nama dan NIP dengan lengkap.');
+                return;
+            }
+            const successBox = document.getElementById('signup-success');
+            successBox.classList.remove('hidden');
+            setTimeout(() => {
+                successBox.classList.add('hidden');
+                toggleAuthMode('login');
+                document.getElementById('login-nip').value = nip;
+            }, 1500);
+        }
+
+        function handleLogin() {
+          
+          
+            const nip = document.getElementById('login-nip').value;
+            const pass = document.getElementById('login-pass').value;
+            const errorBox = document.getElementById('login-error');
+
+            if(nip.trim() !== "" || pass.trim() !== "") {
+                errorBox.classList.add('hidden');
+                
+                const inputName = document.getElementById('signup-name').value || "Employee Name";
+                document.getElementById('user-display-name').innerText = inputName;
+                document.getElementById('user-avatar-initial').innerText = inputName.charAt(0).toUpperCase();
+
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('flex');
+            } else {
+                errorBox.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            document.getElementById('app-container').classList.remove('flex');
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('login-pass').value = '';
+            toggleAuthMode('login');
+        }
+
+        function formatRupiahInput(input) {
+            let val = input.value.replace(/[^0-9]/g, '');
+            if (val === '') {
+                input.value = 'Rp 0';
+                return;
+            }
+            let numericVal = parseInt(val, 10);
+            let formatted = new Intl.NumberFormat('id-ID').format(numericVal);
+            input.value = 'Rp ' + formatted;
+        }
+
+        function parseRupiah(str) {
+            if (!str) return 0;
+            return parseFloat(str.replace(/[^0-9]/g, '')) || 0;
+        }
+
+        function handleDynamicLoanCheckbox(currentIndex) {
+            const currentCheckbox = document.getElementById(`check-loan-${currentIndex}`);
+            const wrapper = document.getElementById('outside-loans-wrapper');
+
+            const existingItems = wrapper.querySelectorAll('.loan-item');
+            existingItems.forEach(item => {
+                const itemIndex = parseInt(item.getAttribute('data-index'));
+                if (itemIndex > currentIndex) {
+                    item.remove();
+                }
+            });
+
+            if (currentCheckbox.checked) {
+                const nextIndex = currentIndex + 1;
+                const bgColors = ['bg-blue-50/50 border-blue-200', 'bg-indigo-50/50 border-indigo-200', 'bg-purple-50/50 border-purple-200', 'bg-teal-50/50 border-teal-200'];
+                const colorClass = bgColors[(nextIndex - 2) % bgColors.length];
+
+                const newItem = document.createElement('div');
+                newItem.className = `space-y-1.5 p-4 rounded-xl border loan-item ${colorClass}`;
+                newItem.setAttribute('data-index', nextIndex);
+
+                newItem.innerHTML = `
+                    <label class="block font-bold text-slate-700">Fasilitas di Luar KSM (Fasilitas ${nextIndex}):</label>
+                    <input type="text" id="calc-outside-loan-${nextIndex}" value="Rp 0" oninput="formatRupiahInput(this)" class="w-full p-3 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-mandiri-blue outside-loan-input">
+                    <div class="flex items-center space-x-2 pt-2">
+                        <input type="checkbox" id="check-loan-${nextIndex}" onchange="handleDynamicLoanCheckbox(${nextIndex})" class="w-4 h-4 text-mandiri-blue rounded border-slate-300 focus:ring-mandiri-blue cursor-pointer loan-checkbox">
+                        <label for="check-loan-${nextIndex}" class="font-bold text-mandiri-blue cursor-pointer text-xs">Click Checkbox, jika ada fasilitas lain di luar KSM.</label>
+                    </div>
+                `;
+
+                wrapper.appendChild(newItem);
+            }
+        }
+
+        function clearCalculatorForm() {
+            document.getElementById('calc-customer-name').value = "";
+            document.getElementById('calc-region').value = "";
+            document.getElementById('calc-area').value = "";
+            document.getElementById('calc-branch').value = "";
+            document.getElementById('calc-class').value = "1";
+            document.getElementById('calc-income').value = "";
+            document.getElementById('calc-plafon').value = "";
+            document.getElementById('calc-tenor').value = "";
+            document.getElementById('calc-rate').value = "11.5";
+            
+            const wrapper = document.getElementById('outside-loans-wrapper');
+            wrapper.innerHTML = `
+                <div class="space-y-1.5 bg-slate-50 p-4 rounded-xl border border-slate-200 loan-item" data-index="1">
+                    <label class="block font-bold text-slate-700">Fasilitas di Luar KSM (Fasilitas 1):</label>
+                    <input type="text" id="calc-outside-loan-1" value="Rp 0" oninput="formatRupiahInput(this)" class="w-full p-3 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-mandiri-blue outside-loan-input">
+                    <div class="flex items-center space-x-2 pt-2">
+                        <input type="checkbox" id="check-loan-1" onchange="handleDynamicLoanCheckbox(1)" class="w-4 h-4 text-mandiri-blue rounded border-slate-300 focus:ring-mandiri-blue cursor-pointer loan-checkbox">
+                        <label for="check-loan-1" class="font-bold text-mandiri-blue cursor-pointer text-xs">Click Checkbox, jika ada fasilitas lain di luar KSM.</label>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('calc-result-box').classList.add('hidden');
+        }
+
+        function sendDataToSpreadsheet(payload) {
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                console.log("Data berhasil dikirim ke Google Sheets.");
+            }).catch(error => {
+                console.error("Gagal mengirim data ke spreadsheet:", error);
+            });
+        }
+
+        function runCreditCalculator() {
+            const customerName = document.getElementById('calc-customer-name').value;
+            const region = document.getElementById('calc-region').value;
+            const area = document.getElementById('calc-area').value;
+            const branch = document.getElementById('calc-branch').value;
+            const cls = parseInt(document.getElementById('calc-class').value);
+            const incomeRupiah = parseRupiah(document.getElementById('calc-income').value); 
+            const plafonRupiah = parseRupiah(document.getElementById('calc-plafon').value); 
+            const tenor = parseInt(document.getElementById('calc-tenor').value); 
+            const annualRate = parseFloat(document.getElementById('calc-rate').value); 
+            
+            let totalOutsideLoans = 0;
+            const allInputs = document.querySelectorAll('.outside-loan-input');
+            allInputs.forEach(input => {
+                totalOutsideLoans += parseRupiah(input.value);
+            });
+
+            const formattedTotalOutside = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalOutsideLoans);
+
+            const incomeJuta = incomeRupiah / 1000000; 
+            const plafonJuta = plafonRupiah / 1000000; 
+
+            const resultBox = document.getElementById('calc-result-box');
+            const statusHeader = document.getElementById('calc-status-header');
+            const detailText = document.getElementById('calc-detail-text');
+
+            resultBox.classList.remove('hidden');
+
+            if (!customerName || incomeRupiah <= 0 || plafonRupiah <= 0 || isNaN(tenor) || isNaN(annualRate)) {
+                resultBox.className = "p-4 rounded-xl border bg-amber-50 border-amber-200 text-amber-800 text-xs space-y-2";
+                statusHeader.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i><span>Form Belum Lengkap</span>`;
+                detailText.innerHTML = `Mohon isi Nama Nasabah dan seluruh parameter kalkulator dengan benar.`;
+                return;
+            }
+
+            const monthlyRate = (annualRate / 100) / 12;
+            let monthlyInstallment = 0;
+
+            if (monthlyRate === 0) {
+                monthlyInstallment = plafonRupiah / tenor;
+            } else {
+                monthlyInstallment = (plafonRupiah * monthlyRate * Math.pow(1 + monthlyRate, tenor)) / (Math.pow(1 + monthlyRate, tenor) - 1);
+            }
+
+            const totalMonthlyBurden = monthlyInstallment + totalOutsideLoans;
+            const calculatedDbr = (totalMonthlyBurden / incomeRupiah) * 100;
+
+            let matchedTier = false;
+            let allowedLimit = 0;
+            let allowedTenor = 0;
+            let allowedDbr = 0;
+            let tierDesc = "";
+            let reasons = [];
+
+            if (cls === 1) {
+                if (incomeJuta >= 3 && incomeJuta < 5) {
+                    matchedTier = true; allowedLimit = 250; allowedTenor = 180; allowedDbr = 60; tierDesc = "Rp 3 Juta - <Rp 5 Juta";
+                } else if (incomeJuta >= 5) {
+                    matchedTier = true; allowedLimit = 1000; allowedTenor = 180; allowedDbr = 70; tierDesc = ">= Rp 5 Juta";
+                } else {
+                    reasons.push(`Tier Income di bawah minimum Class 1.`);
+                }
+            } else if (cls === 2) {
+                if (incomeJuta >= 5 && incomeJuta < 10) {
+                    matchedTier = true; allowedLimit = 250; allowedTenor = 60; allowedDbr = 40; tierDesc = "Rp 5 Juta - <Rp 10 Juta";
+                } else if (incomeJuta >= 10 && incomeJuta < 20) {
+                    matchedTier = true; allowedLimit = 750; allowedTenor = 120; allowedDbr = 60; tierDesc = ">= Rp 10 Juta - <Rp 20 Juta";
+                } else if (incomeJuta >= 20) {
+                    matchedTier = true; allowedLimit = 1000; allowedTenor = 180; allowedDbr = 70; tierDesc = ">= Rp 20 Juta";
+                } else {
+                    reasons.push(`Tier Income di bawah minimum Class 2.`);
+                }
+            } else if (cls === 3) {
+                if (incomeJuta >= 5 && incomeJuta < 10) {
+                    matchedTier = true; allowedLimit = 100; allowedTenor = 36; allowedDbr = 30; tierDesc = "Rp 5 Juta - <Rp 10 Juta";
+                } else if (incomeJuta >= 10 && incomeJuta < 15) {
+                    matchedTier = true; allowedLimit = 250; allowedTenor = 60; allowedDbr = 50; tierDesc = ">= Rp 10 Juta - <Rp 15 Juta";
+                } else if (incomeJuta >= 15 && incomeJuta < 20) {
+                    matchedTier = true; allowedLimit = 500; allowedTenor = 96; allowedDbr = 60; tierDesc = ">= Rp 15 Juta - <Rp 20 Juta";
+                } else if (incomeJuta >= 20) {
+                    matchedTier = true; allowedLimit = 750; allowedTenor = 120; allowedDbr = 70; tierDesc = ">= Rp 20 Juta";
+                } else {
+                    reasons.push(`Tier Income di bawah minimum Class 3.`);
+                }
+            } else if (cls === 4) {
+                if (incomeJuta >= 5 && incomeJuta < 20) {
+                    matchedTier = true; allowedLimit = 100; allowedTenor = 36; allowedDbr = 30; tierDesc = "Rp 5 Juta - <Rp 20 Juta";
+                } else if (incomeJuta >= 20 && incomeJuta < 30) {
+                    matchedTier = true; allowedLimit = 300; allowedTenor = 60; allowedDbr = 40; tierDesc = ">= Rp 20 Juta - <Rp 30 Juta";
+                } else if (incomeJuta >= 30) {
+                    matchedTier = true; allowedLimit = 500; allowedTenor = 120; allowedDbr = 50; tierDesc = ">= Rp 30 Juta";
+                } else {
+                    reasons.push(`Tier Income di bawah minimum Class 4.`);
+                }
+            } else if (cls === 5) {
+                if (incomeJuta >= 5 && incomeJuta < 10) {
+                    matchedTier = true; allowedLimit = 100; allowedTenor = 36; allowedDbr = 30; tierDesc = "Rp 5 Juta - <Rp 10 Juta";
+                } else if (incomeJuta >= 10 && incomeJuta < 20) {
+                    matchedTier = true; allowedLimit = 300; allowedTenor = 36; allowedDbr = 40; tierDesc = ">= Rp 10 Juta - <Rp 20 Juta";
+                } else if (incomeJuta >= 20) {
+                    matchedTier = true; allowedLimit = 300; allowedTenor = 36; allowedDbr = 50; tierDesc = ">= Rp 20 Juta";
+                } else {
+                    reasons.push(`Tier Income di bawah minimum Class 5.`);
+                }
+            }
+
+            if (matchedTier) {
+                if (plafonJuta > allowedLimit) {
+                    reasons.push(`Plafon melebihi Maks. Limit. (Batas Maks. Limit Rp ${allowedLimit} Juta)`);
+                }
+                if (tenor > allowedTenor) {
+                    reasons.push(`Tenor melebihi Maks. Tenor. (Batas Maks. Tenor RAC ${allowedTenor} bulan)`);
+                }
+                if (calculatedDbr > allowedDbr) {
+                    reasons.push(`DBR gabungan melebihi Maks. DBR. (Batas Maks. DBR RAC ${allowedDbr}%)`);
+                }
+            }
+
+            let statusResult = reasons.length > 0 ? "INELIGIBLE" : "ELIGIBLE";
+
+            let totalInterestPaid = (monthlyInstallment * tenor) - plafonRupiah;
+            let formattedInterestIncome = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Math.max(0, totalInterestPaid));
+
+            // 1. Optimal Max Plafon
+            let optimalMaxPlafonVal = allowedLimit * 1000000;
+            let formattedOptimalMax = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(optimalMaxPlafonVal);
+
+            // 2. Suggested Credit Ceiling
+            let maxAllowedTotalInstallment = incomeRupiah * (allowedDbr / 100);
+            let maxAllowedKsmInstallment = maxAllowedTotalInstallment - totalOutsideLoans;
+            let suggestedPlafonByDbr = 0;
+            if (maxAllowedKsmInstallment > 0) {
+                if (monthlyRate === 0) {
+                    suggestedPlafonByDbr = maxAllowedKsmInstallment * tenor;
+                } else {
+                    suggestedPlafonByDbr = (maxAllowedKsmInstallment * (Math.pow(1 + monthlyRate, tenor) - 1)) / (monthlyRate * Math.pow(1 + monthlyRate, tenor));
+                }
+            }
+            let finalSuggestedCeilingVal = Math.max(0, Math.min(optimalMaxPlafonVal, suggestedPlafonByDbr));
+            let formattedSuggested = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(finalSuggestedCeilingVal);
+
+            let riskCategory = "Low Risk";
+            if (calculatedDbr > 55) {
+                riskCategory = "High Risk";
+            } else if (calculatedDbr >= 40) {
+                riskCategory = "Medium Risk";
+            }
+
+            const dataToSubmit = {
+                user: document.getElementById('user-display-name').innerText,
+                customerName: customerName,
+                region: region || "-",
+                area: area || "-",
+                branch: branch || "-",
+                cls: `Class ${cls}`,
+                income: document.getElementById('calc-income').value,
+                plafon: document.getElementById('calc-plafon').value,
+                tenor: tenor + " Bulan",
+                rate: annualRate + "%",
+                totalOutsideLoans: formattedTotalOutside,
+                dbrPercentage: calculatedDbr.toFixed(1) + "%",
+                dbrRacLimit: allowedDbr ? allowedDbr + "%" : "-",
+                potentialInterestIncome: formattedInterestIncome,
+                optimalMaxPlafon: formattedOptimalMax,
+                riskCategory: riskCategory,
+                takeOverPotential: formattedTotalOutside,
+                suggestedCeiling: reasons.length > 0 ? formattedSuggested : "-",
+                status: statusResult
+            };
+            sendDataToSpreadsheet(dataToSubmit);
+
+            const formattedInstallment = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(monthlyInstallment);
+            const formattedTotalBurden = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalMonthlyBurden);
+
+            if (reasons.length > 0) {
+                resultBox.className = "p-5 rounded-xl border bg-rose-50 border-rose-200 text-rose-900 text-xs space-y-2 shadow-sm";
+                statusHeader.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 text-base"></i><span class="font-bold text-rose-800">INELIGIBLE</span>`;
+                detailText.innerHTML = `
+                    <p class="font-bold mb-1 text-slate-800">[ Hasil Kalkulasi Sistem Gabungan ]</p>
+                    <p>- Nasabah: <strong>${customerName}</strong> (${branch || 'Cabang -'})</p>
+                    <p>- Estimasi Angsuran KSM per Bulan: <strong>${formattedInstallment}</strong></p>
+                    <p>- Total Angsuran Fasilitas Lainnya (Luar KSM): <strong>${formattedTotalOutside}</strong></p>
+                    <p>- Total Angsuran Keseluruhan (KSM + Luar KSM): <strong class="text-rose-700">${formattedTotalBurden}</strong></p>
+                    <p>- DBR Gabungan: <strong>${calculatedDbr.toFixed(1)}%</strong> (Batas Maks. DBR RAC: ${allowedDbr}%)</p>
+                    <p>- Profil Risiko: <strong class="text-amber-700">${riskCategory}</strong></p>
+                    <br>
+                    <p class="font-bold text-rose-800 mb-1">[ Keterangan Ketidaksesuaian Kebijakan ]</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        ${reasons.map(r => `<li>${r}</li>`).join('')}
+                    </ul>
+                    <div class="mt-3 p-3 bg-white rounded-lg border border-rose-200 text-slate-800 space-y-1 shadow-sm">
+                        <p class="font-bold text-mandiri-blue"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Rekomendasi Saran Perbaikan:</p>
+                        <p>1. Optimal Max Plafon (Batas Kebijakan Tier): <strong class="text-mandiri-blue font-bold">${formattedOptimalMax}</strong></p>
+                        <p>2. Suggested Credit Ceiling (Plafon Aman DBR): <strong class="text-emerald-700 font-bold">${formattedSuggested}</strong> (Potensi Pendapatan Bunga: ${formattedInterestIncome})</p>
+                    </div>
+                `;
+            } else {
+                resultBox.className = "p-5 rounded-xl border bg-emerald-50 border-emerald-200 text-emerald-900 text-xs space-y-2 shadow-sm";
+                statusHeader.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-base"></i><span class="font-bold text-emerald-800">ELIGIBLE</span>`;
+                detailText.innerHTML = `
+                    <p class="font-bold mb-1 text-slate-800">[ Hasil Kalkulasi Sistem Gabungan ]</p>
+                    <p>- Nasabah: <strong>${customerName}</strong> (${branch || 'Cabang -'})</p>
+                    <p>- Estimasi Angsuran KSM per Bulan: <strong class="text-emerald-700">${formattedInstallment}</strong></p>
+                    <p>- Total Angsuran Fasilitas Lainnya (Luar KSM): <strong class="text-slate-700">${formattedTotalOutside}</strong></p>
+                    <p>- Total Angsuran Keseluruhan (KSM + Luar KSM): <strong class="text-mandiri-blue font-bold">${formattedTotalBurden}</strong></p>
+                    <p>- DBR Gabungan: <strong class="text-emerald-700">${calculatedDbr.toFixed(1)}%</strong> (Batas Maks. DBR RAC: ${allowedDbr}%)</p>
+                    <p>- Potensi Pendapatan Bunga (Interest Income): <strong class="text-emerald-700">${formattedInterestIncome}</strong></p>
+                    <p>- Profil Risiko: <strong class="text-emerald-700">${riskCategory}</strong></p>
+                    <br>
+                    <p class="font-bold text-emerald-850 mb-1">[ Keterangan Validasi ]</p>
+                    <p>✔️ Class ${cls} Payroll - Tier Income: ${tierDesc}</p>
+                    <p>✔️ Plafon &le; Maks. Limit (Rp ${allowedLimit} Juta)</p>
+                    <p>✔️ Tenor (${tenor} bulan) &le; Maks. Tenor (${allowedTenor} bulan)</p>
+                `;
+            }
+        }
+
+        function exportToPNG() {
+            const container = document.getElementById('app-container');
+            html2canvas(container, { scale: 2, useCORS: true }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Mandiri-Credit-Calculator-Report.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
